@@ -37,7 +37,7 @@ class YouTubeDownloaderAPI:
         
         # Инициализация Flask-приложения
         self.app = Flask(__name__, 
-                         static_folder=os.path.join(os.path.dirname(__file__), '..', 'static'),
+                         static_folder=os.path.join(os.path.dirname(__file__), 'static'),
                          static_url_path='/static')
         
         # Настройка статической директории для загрузок
@@ -78,7 +78,7 @@ class YouTubeDownloaderAPI:
         """Создание необходимых директорий для работы сервиса."""
         download_dir = self.config["downloader"]["download_dir"]
         temp_dir = self.config["downloader"]["temp_dir"]
-        static_dir = os.path.join(os.path.dirname(__file__), '..', 'static')
+        static_dir = os.path.join(os.path.dirname(__file__), 'static')
         
         for directory in [download_dir, temp_dir, static_dir]:
             if not os.path.exists(directory):

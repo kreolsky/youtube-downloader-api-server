@@ -50,7 +50,7 @@ class Routes:
             HTML-страница клиента.
         """
         self.logger.info("Serving web client")
-        return send_from_directory(current_app.static_folder, 'index.html')
+        return current_app.send_static_file('index.html')
 
     def health(self):
         """

@@ -34,15 +34,6 @@ def main():
     try:
         # Инициализация и запуск сервиса
         api = YouTubeDownloaderAPI(args.config)
-        
-        # Проверка существования index.html в static директории
-        static_dir = os.path.join(os.path.dirname(__file__), 'static')
-        index_file = os.path.join(static_dir, 'index.html')
-        
-        if not os.path.exists(index_file):
-            print(f"Warning: Web client file not found: {index_file}")
-            print("The root endpoint (/) will not serve the web client.")
-        
         api.run()
     except Exception as e:
         print(f"Error starting YouTube Downloader API Service: {e}")

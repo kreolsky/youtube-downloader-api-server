@@ -6,7 +6,6 @@ services:
       - "5001:5001"
     volumes:
       - ./app:/app/app
-      - ./static:/app/static
       - ./config.json:/app/config.json
       - ./downloads:/app/downloads
       - ./temp:/app/temp
