@@ -39,28 +39,21 @@ pip install -r requirements.txt
 # On Ubuntu/Debian
 sudo apt-get install ffmpeg
 
-# On macOS with Homebrew
-brew install ffmpeg
-
-# On Windows, download from https://ffmpeg.org/download.html
-```
-
 4. Start the service:
 ```bash
 python server.py
 ```
 
-### Using Docker
+### Running with Docker Compose
 
-1. Build the Docker image:
-```bash
-docker build -t youtube-downloader-api .
-```
+1.  Ensure that Docker and Docker Compose are installed.
+2.  Start the service:
 
-2. Run the container:
-```bash
-docker run -p 5001:5001 -v $(pwd)/downloads:/app/downloads youtube-downloader-api
-```
+    ```bash
+    docker compose up -d
+    ```
+
+    This command will build the image if it hasn't been built yet, and start the service in detached mode.
 
 ## Configuration
 
