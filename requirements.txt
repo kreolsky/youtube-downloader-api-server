@@ -1,0 +1,7 @@
+flask
+flask-cors
+waitress
+yt-dlp
+ffmpeg-python
+python-dotenv
+requests

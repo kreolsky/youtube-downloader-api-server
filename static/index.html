@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Downloader</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        h1 {
+            color: #d32f2f;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .option {
+            flex: 1;
+        }
+        
+        button {
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #b71c1c;
+        }
+        
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .result {
+            margin-top: 30px;
+            display: none;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            padding: 20px;
+            border-left: 4px solid #d32f2f;
+        }
+        
+        .result h3 {
+            margin-top: 0;
+            color: #d32f2f;
+        }
+        
+        .result-item {
+            margin-bottom: 10px;
+        }
+        
+        .result-label {
+            font-weight: 600;
+        }
+        
+        .error-message {
+            color: #d32f2f;
+            font-weight: 600;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #d32f2f;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .log-container {
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            font-family: monospace;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 3px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .log-title {
+            font-weight: 600;
+        }
+        
+        .log-toggle {
+            background: none;
+            border: none;
+            color: #2196F3;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 0;
+            width: auto;
+        }
+        
+        .log-toggle:hover {
+            text-decoration: underline;
+            background: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>YouTube Downloader</h1>
+        
+        <div class="form-group">
+            <label for="youtube-url">YouTube URL:</label>
+            <input type="text" id="youtube-url" placeholder="https://www.youtube.com/watch?v=..." required>
+        </div>
+        
+        <div class="options">
+            <div class="option">
+                <label for="download-type">Download Type:</label>
+                <select id="download-type">
+                    <option value="video">Video</option>
+                    <option value="audio">Audio</option>
+                    <option value="mp3">Audio as MP3</option>
+                </select>
+            </div>
+            
+            <div class="option" id="resolution-container">
+                <label for="resolution">Resolution:</label>
+                <select id="resolution">
+                    <option value="360">360p</option>
+                    <option value="480">480p</option>
+                    <option value="720" selected>720p</option>
+                    <option value="1080">1080p</option>
+                    <option value="1440">1440p</option>
+                    <option value="2160">4K (2160p)</option>
+                </select>
+            </div>
+        </div>
+        
+        <button id="download-btn">Download</button>
+        <div class="error-message" id="error-message"></div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Downloading... This may take a minute.</p>
+        </div>
+        
+        <div class="log-header">
+            <span class="log-title"></span>
+            <button class="log-toggle" id="log-toggle">Show Log</button>
+        </div>
+        
+        <div class="log-container" id="log-container"></div>
+        
+        <div class="result" id="result">
+            <h3>Download Complete</h3>
+            <div class="result-item">
+                <span class="result-label">Title:</span>
+                <span id="result-title"></span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Duration:</span>
+                <span id="result-duration"></span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Download Link:</span>
+                <a id="result-url" href="#" target="_blank">Open File</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // API configuration
+        const API_URL = window.location.origin; // Use the same origin as the page
+        
+        // DOM Elements
+        const urlInput = document.getElementById('youtube-url');
+        const downloadTypeSelect = document.getElementById('download-type');
+        const resolutionContainer = document.getElementById('resolution-container');
+        const resolutionSelect = document.getElementById('resolution');
+        const downloadBtn = document.getElementById('download-btn');
+        const errorMessage = document.getElementById('error-message');
+        const loading = document.getElementById('loading');
+        const result = document.getElementById('result');
+        const resultTitle = document.getElementById('result-title');
+        const resultDuration = document.getElementById('result-duration');
+        const resultUrl = document.getElementById('result-url');
+        const logToggle = document.getElementById('log-toggle');
+        const logContainer = document.getElementById('log-container');
+        
+        // Hide resolution select for audio options
+        downloadTypeSelect.addEventListener('change', function() {
+            if (this.value === 'video') {
+                resolutionContainer.style.display = 'block';
+            } else {
+                resolutionContainer.style.display = 'none';
+            }
+        });
+        
+        // Toggle log display
+        logToggle.addEventListener('click', function() {
+            if (logContainer.style.display === 'block') {
+                logContainer.style.display = 'none';
+                logToggle.textContent = 'Show Log';
+            } else {
+                logContainer.style.display = 'block';
+                logToggle.textContent = 'Hide Log';
+            }
+        });
+        
+        // Function to add a log entry
+        function addLogEntry(message) {
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.textContent = `${new Date().toLocaleTimeString()} - ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight; // Auto-scroll to the bottom
+        }
+        
+        // Function to start polling for logs
+        function startLogPolling(processId) {
+            // This is a placeholder. In a real implementation, you would poll an endpoint
+            // that returns the latest logs for the specific download process.
+            // For simplicity, we're not implementing that here.
+        }
+        
+        // Download button click handler
+        downloadBtn.addEventListener('click', async function() {
+            const youtubeUrl = urlInput.value.trim();
+            const downloadType = downloadTypeSelect.value;
+            const resolution = resolutionSelect.value;
+            
+            // Validate input
+            if (!youtubeUrl) {
+                showError('Please enter a YouTube URL');
+                return;
+            }
+            
+            // Validate URL format
+            if (!isValidUrl(youtubeUrl)) {
+                showError('Please enter a valid URL');
+                return;
+            }
+            
+            // Hide previous results and errors
+            hideError();
+            result.style.display = 'none';
+            
+            // Clear previous logs
+            logContainer.innerHTML = '';
+            logContainer.style.display = 'block';
+            logToggle.textContent = 'Hide Log';
+            
+            // Show loading indicator
+            loading.style.display = 'block';
+            downloadBtn.disabled = true;
+            
+            // Add initial log entry
+            addLogEntry(`Starting download of ${downloadType} from ${youtubeUrl}`);
+            
+            try {
+                // Determine endpoint based on download type
+                let endpoint;
+                if (downloadType === 'video') {
+                    endpoint = `${API_URL}/v1/youtube/download`;
+                    addLogEntry(`Preparing to download video at ${resolution}p resolution`);
+                } else if (downloadType === 'audio') {
+                    endpoint = `${API_URL}/v1/youtube/download/audio`;
+                    addLogEntry(`Preparing to download audio in original format`);
+                } else if (downloadType === 'mp3') {
+                    endpoint = `${API_URL}/v1/youtube/download/audio/mp3`;
+                    addLogEntry(`Preparing to download audio and convert to MP3`);
+                }
+                
+                // Prepare request data
+                const requestData = { url: youtubeUrl };
+                if (downloadType === 'video') {
+                    requestData.resolution = resolution;
+                }
+                
+                // Log the request
+                addLogEntry(`Sending request to ${endpoint}`);
+                
+                // Make API request
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Server responded with ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Log the response
+                addLogEntry(`Download completed successfully`);
+                addLogEntry(`Title: ${data.title || 'Unknown'}`);
+                addLogEntry(`Duration: ${formatDuration(data.duration)}`);
+                addLogEntry(`File saved to: ${data.local_path}`);
+                
+                // Display result
+                resultTitle.textContent = data.title || 'Unknown';
+                resultDuration.textContent = formatDuration(data.duration);
+                resultUrl.href = data.url;
+                result.style.display = 'block';
+                
+            } catch (error) {
+                addLogEntry(`Error: ${error.message}`);
+                showError(`Download failed: ${error.message}`);
+            } finally {
+                // Hide loading indicator
+                loading.style.display = 'none';
+                downloadBtn.disabled = false;
+            }
+        });
+        
+        // Helper function to validate URL
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+        
+        // Helper function to format duration
+        function formatDuration(seconds) {
+            if (!seconds) return 'Unknown';
+            
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            
+            if (minutes < 60) {
+                return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+            }
+            
+            const hours = Math.floor(minutes / 60);
+            const remainingMinutes = minutes % 60;
+            
+            return `${hours}:${remainingMinutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+        
+        // Show error message
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+        
+        // Hide error message
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

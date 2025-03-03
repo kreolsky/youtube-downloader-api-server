@@ -1,0 +1,24 @@
+{
+    "server": {
+        "host": "0.0.0.0",
+        "port": 5001,
+        "workers": 4
+    },
+    "downloader": {
+        "download_dir": "./downloads",
+        "base_url": "http://localhost:5001/media",
+        "log_file": "logs/youtube_downloader.log",
+        "default_resolution": 720,
+        "temp_dir": "./temp",
+        "max_age_days": 30
+    },
+    "api": {
+        "cors_origin": "*",
+        "access_log": true,
+        "rate_limit": {
+            "enabled": true,
+            "limit": 100,
+            "period": 3600
+        }
+    }
+}

@@ -1,0 +1,16 @@
+services:
+  youtube-downloader-api:
+    build: .
+    container_name: youtube-downloader-api
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./app:/app/app
+      - ./static:/app/static
+      - ./config.json:/app/config.json
+      - ./downloads:/app/downloads
+      - ./temp:/app/temp
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1  # Вывод логов Python без буферизации
+    restart: unless-stopped
