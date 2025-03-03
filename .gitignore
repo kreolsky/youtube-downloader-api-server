@@ -1,5 +1,8 @@
 .DS_Store
 __pycache__
+downloads
 /downloads/*
+temp
 /temp/*
+logs
 /logs/*
