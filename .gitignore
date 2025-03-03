@@ -1,5 +1,8 @@
 .DS_Store
 __pycache__
-downloads/*
-temp/*
-logs/*
+/downloads/*
+!/downloads/*.md
+/temp/*
+!/temp/*.md
+/logs/*
+!/logs/*.md
