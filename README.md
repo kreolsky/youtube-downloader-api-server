@@ -2,6 +2,8 @@
 
 A lightweight, fast, and reliable API service for downloading videos and audio from YouTube. This service provides a simple way to download YouTube content in various formats and resolutions with a clean web interface.
 
+![](screen.png)
+
 ## Features
 
 - 🖥️ Clean web interface for easy usage
@@ -38,6 +40,7 @@ pip install -r requirements.txt
 ```bash
 # On Ubuntu/Debian
 sudo apt-get install ffmpeg
+```
 
 4. Start the service:
 ```bash
